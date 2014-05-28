@@ -66,7 +66,8 @@ public class LibLoader {
             return;
         }
 
-        String libraryPath = prepareLibraryPath();
+        final String envLibPath = System.getProperty("rxtx.rebundled.libraryPath");
+        final String libraryPath = envLibPath != null ? envLibPath : prepareLibraryPath();
         if (libraryPath == null) {
             logStdErr("The required library is not available for your system!");
             return;
@@ -74,7 +75,12 @@ public class LibLoader {
 
         logStdOut("Try to load library from path: " + libraryPath);
         try {
-            NativeUtils.loadLibraryFromJar(libraryPath, LIBLOADER_VERSION); // during runtime. .DLL within .JAR
+            if (envLibPath != null) {
+                System.load(envLibPath);
+            }
+            else {
+                NativeUtils.loadLibraryFromJar(libraryPath, LIBLOADER_VERSION); // during runtime. .DLL within .JAR
+            }
         }
         catch (IOException e1) {
             logStdErr("Load native library failed: " + libraryPath);
