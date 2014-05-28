@@ -78,7 +78,7 @@ SRC=../src
 JDKHOME=C:/jdk1.6.0_23
 
 #path to mingw32
-MINGHOME="C:\MinGW"
+MINGHOME="C:\TDM_GCC\x86_64-w64-mingw32"
 
 # path to install RXTXcomm.jar DOS style path
 COMMINSTALL="Z:\CREATELabCommons\trunk\java\lib\rxtx\RxTx20100928\rxtx-devel\build"

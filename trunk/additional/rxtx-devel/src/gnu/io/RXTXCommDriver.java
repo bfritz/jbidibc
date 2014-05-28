@@ -369,22 +369,29 @@ public class RXTXCommDriver implements CommDriver
 		}
 	}
 
-	private void addSpecifiedPorts(String names, int PortType)
-	{
-		final String pathSep = System.getProperty("path.separator", ":");
-		final StringTokenizer tok = new StringTokenizer(names, pathSep);
+private void addSpecifiedPorts(String names, int PortType)
+   {
+   final String pathSep = System.getProperty("path.separator", ":");
+   final StringTokenizer tok = new StringTokenizer(names, pathSep);
 
-		if (debug)
-			System.out.println("\nRXTXCommDriver:addSpecifiedPorts()");
-		while (tok.hasMoreElements())
-		{
-			String PortName = tok.nextToken();
+   if (debug)
+      {
+      System.out.println("\nRXTXCommDriver:addSpecifiedPorts(" + names + ")");
+      }
+   while (tok.hasMoreElements())
+      {
+      String PortName = tok.nextToken();
 
-			if (testRead(PortName, PortType))
-				CommPortIdentifier.addPortName(PortName,
-					PortType, this);
-		}
-	}
+      if (debug)
+         {
+         System.out.println("\nRXTXCommDriver:addSpecifiedPorts(): checking port [" + PortName + "]");
+         }
+      if (testRead(PortName, PortType))
+         {
+         CommPortIdentifier.addPortName(PortName, PortType, this);
+         }
+      }
+   }
 
    /*
     * Register ports specified in the file "gnu.io.rxtx.properties"
@@ -403,100 +410,164 @@ public class RXTXCommDriver implements CommDriver
     *  gnu.io.rxtx.SerialPorts=/dev/ttyS0:/dev/ttyS1:
     *  gnu.io.rxtx.ParallelPorts=/dev/lp0:
     *
+    * Chris Bartley (bartley@cmu.edu) edited on 2011.01.24 to add the ability to specify the properties as a system
+    * property (e.g. via a -D command line switch).  If specified, they are only used as a last resort (i.e. properties
+    * file takes precendence).
     */
-	private boolean registerSpecifiedPorts(int PortType)
-	{
-		String val = null;
-		Properties props = null;
-		String file_loc = null;
-		// Old style: properties file must be in JRE folder
-		String ext_dirs = System.getProperty("java.ext.dirs");
-		String[] dirArray = ext_dirs.split(System.getProperty("path.separator"));
-		for (int i = 0; i < dirArray.length; i++)
-		{
-			String file_name = dirArray[i] + System.getProperty("file.separator") + "gnu.io.rxtx.properties";
-			File file = new File(file_name);
-			if (file.exists())
-			{
-				file_loc = file_name;
-				break;
-			}
-		}
-		if (file_loc != null)
-		{
-			FileInputStream in = null;
-			try
-			{
-				in = new FileInputStream(file_loc);
-				props = new Properties();
-				props.load(in);
-			} catch (Exception e)
-			{
-				if (debug)
-					System.out.println("Error encountered while reading " + file_loc + ": " + e);
-			} finally
-			{
-				if (in != null)
-				{
-					try
-					{
-						in.close();
-					} catch (IOException e)	{}
-				}
-			}
-		}
-		if (props == null)
-		{
-			// New style: properties file anywhere in classpath
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			try
-			{
-				Enumeration resources = loader.getResources("gnu.io.rxtx.properties");
-				while (resources.hasMoreElements())
-				{
-					URL propertyURL = (URL) resources.nextElement();
-					props = new Properties();
-					props.load(propertyURL.openStream());
-					break;
-				}
-			} catch (IOException e)
-			{
-				if (debug)
-					System.out.println("Error encountered while getting gnu.io.rxtx.properties from the classpath: " + e);
-			}
-		}
-		if (debug)
-			System.out.println("checking for system-known ports of type " + PortType);
-		if (debug)
-			System.out.println("checking registry for ports of type " + PortType);
-		if (props != null)
-		{
-			switch (PortType)
-			{
-				case CommPortIdentifier.PORT_SERIAL:
-					if ((val = props.getProperty("gnu.io.rxtx.SerialPorts")) == null)
-						val = props.getProperty("gnu.io.SerialPorts");
-					break;
+   private boolean registerSpecifiedPorts(int PortType)
+      {
+      String val = null;
+      Properties props = null;
+      String file_loc = null;
+      // Old style: properties file must be in JRE folder
+      String ext_dirs = System.getProperty("java.ext.dirs");
+      String[] dirArray = ext_dirs.split(System.getProperty("path.separator"));
+      for (int i = 0; i < dirArray.length; i++)
+         {
+         String file_name = dirArray[i] + System.getProperty("file.separator") + "gnu.io.rxtx.properties";
+         File file = new File(file_name);
+         if (file.exists())
+            {
+            file_loc = file_name;
+            break;
+            }
+         }
+      if (file_loc != null)
+         {
+         FileInputStream in = null;
+         try
+            {
+            in = new FileInputStream(file_loc);
+            props = new Properties();
+            props.load(in);
+            }
+         catch (Exception e)
+            {
+            if (debug)
+               {
+               System.out.println("RXTXCommDriver.registerSpecifiedPorts(): Error encountered while reading " + file_loc + ": " + e);
+               }
+            }
+         finally
+            {
+            if (in != null)
+               {
+               try
+                  {
+                  in.close();
+                  }
+               catch (IOException e)
+                  {
+                  }
+               }
+            }
+         }
 
-				case CommPortIdentifier.PORT_PARALLEL:
-					if ((val = props.getProperty("gnu.io.rxtx.ParallelPorts")) == null)
-						val = props.getProperty("gnu.io.ParallelPorts");
-					break;
-				default:
-					if (debug)
-						System.out.println("unknown port type " + PortType + " passed to RXTXCommDriver.registerSpecifiedPorts()");
-			}
-		} else
-		{
-			if (debug)
-				System.out.println("The file: gnu.io.rxtx.properties doesn't exist.");
-		}
-		if (val != null)
-		{
-			addSpecifiedPorts(val, PortType);
-			return true;
-		} else return false;
-	}
+      // check for properties file on the classpath
+      if (props == null)
+         {
+         // New style: properties file anywhere in classpath
+         ClassLoader loader = Thread.currentThread().getContextClassLoader();
+         try
+            {
+            Enumeration resources = loader.getResources("gnu.io.rxtx.properties");
+            while (resources.hasMoreElements())
+               {
+               URL propertyURL = (URL)resources.nextElement();
+               props = new Properties();
+               props.load(propertyURL.openStream());
+               break;
+               }
+            }
+         catch (IOException e)
+            {
+            if (debug)
+               {
+               System.out.println("RXTXCommDriver.registerSpecifiedPorts(): Error encountered while getting gnu.io.rxtx.properties from the classpath: " + e);
+               }
+            }
+         }
+      if (debug)
+         {
+         System.out.println("RXTXCommDriver.registerSpecifiedPorts(): checking for system-known ports of type " + PortType);
+         }
+      if (debug)
+         {
+         System.out.println("RXTXCommDriver.registerSpecifiedPorts(): checking registry for ports of type " + PortType);
+         }
+
+      // check for the properties specified as a system property (e.g. via a -D command line switch)
+      if (props == null)
+         {
+         if (debug)
+            {
+            System.out.println("RXTXCommDriver.registerSpecifiedPorts(): RxTx ports not specified in properties file, checking system properties... ");
+            }
+         final String serialProp = System.getProperty("gnu.io.rxtx.SerialPorts", null);
+         final String parallelProp = System.getProperty("gnu.io.rxtx.ParallelPorts", null);
+         if (serialProp != null || parallelProp != null)
+            {
+            props = new Properties();
+            if (serialProp != null)
+               {
+               if (debug)
+                  {
+                  System.out.println("RXTXCommDriver.registerSpecifiedPorts(): Found gnu.io.rxtx.SerialPorts property with value of [" + serialProp + "]");
+                  }
+               props.setProperty("gnu.io.rxtx.SerialPorts", serialProp);
+               }
+            if (parallelProp != null)
+               {
+               if (debug)
+                  {
+                  System.out.println("RXTXCommDriver.registerSpecifiedPorts(): Found gnu.io.rxtx.ParallelPorts property with value of [" + parallelProp + "]");
+                  }
+               props.setProperty("gnu.io.rxtx.ParallelPorts", parallelProp);
+               }
+            }
+         }
+
+      if (props != null)
+         {
+         switch (PortType)
+            {
+            case CommPortIdentifier.PORT_SERIAL:
+               if ((val = props.getProperty("gnu.io.rxtx.SerialPorts")) == null)
+                  {
+                  val = props.getProperty("gnu.io.SerialPorts");
+                  }
+               break;
+
+            case CommPortIdentifier.PORT_PARALLEL:
+               if ((val = props.getProperty("gnu.io.rxtx.ParallelPorts")) == null)
+                  {
+                  val = props.getProperty("gnu.io.ParallelPorts");
+                  }
+               break;
+            default:
+               if (debug)
+                  {
+                  System.out.println("RXTXCommDriver.registerSpecifiedPorts(): unknown port type " + PortType + " passed to RXTXCommDriver.registerSpecifiedPorts()");
+                  }
+            }
+         }
+      else
+         {
+         if (debug)
+            {
+            System.out.println("RXTXCommDriver.registerSpecifiedPorts(): The file: gnu.io.rxtx.properties doesn't exist and the properties weren't specified as a system property.");
+            }
+         }
+      if (val != null)
+         {
+         addSpecifiedPorts(val, PortType);
+         return true;
+         }
+      else
+         {
+         return false;
+         }
+      }
 
    /*
     * Look for all entries in deviceDirectory, and if they look like they should
@@ -604,7 +675,7 @@ public class RXTXCommDriver implements CommDriver
 
 
 			/*  There are _many_ possible ports that can be used
-			    on Linux.  See below in the fake Linux-all-ports  
+			    on Linux.  See below in the fake Linux-all-ports
 			    case for a list.  You may add additional ports
 			    here but be warned that too many will significantly
 			    slow down port enumeration.  Linux 2.6 has udev
@@ -704,7 +775,7 @@ public class RXTXCommDriver implements CommDriver
 							"cuaF",    //Stallion Brumby (stli) dialout ports
 							"ttyR",    //Rocketport dialin ports
 							"cuaR",    //Rocketport dialout ports
-							"stl"      //Stallion EasyIO board or Brumby N 
+							"stl"      //Stallion EasyIO board or Brumby N
 						};
 						CandidatePortPrefixes=Temp;
 					}
@@ -903,7 +974,7 @@ public class RXTXCommDriver implements CommDriver
 				case CommPortIdentifier.PORT_SERIAL:
 					if(osName.toLowerCase().indexOf("windows") == -1 )
 					{
-					
+
 						return new RXTXPort( PortName );
 					}
 					else
