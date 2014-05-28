@@ -1,0 +1,25 @@
+/CommDriver.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/CommPort.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/CommPortEnumerator.java/1.1.2.3/Tue Oct 12 18:26:35 2010//Tcommapi-0-0-1
+/CommPortIdentifier.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/CommPortOwnershipListener.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/Dispatcher.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/Log.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/NoSuchPortException.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/ParallelPort.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/ParallelPortEvent.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/ParallelPortEventHandler.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/ParallelPortEventListener.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/ParallelPortImpl.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/PortInUseException.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/PortInfo.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/PortInputStream.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/PortOutputStream.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/SerialPort.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/SerialPortEvent.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/SerialPortEventHandler.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/SerialPortEventListener.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/SerialPortImpl.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/Settings.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+/UnsupportedCommOperationException.java/1.1.2.1/Sun Sep 12 16:28:28 2010//Tcommapi-0-0-1
+D
